@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"html/template"
 	"net/http"
 )
@@ -15,7 +15,7 @@ func main() {
 	//mux := http.NewServeMux()
 
 	http.HandleFunc("/", mainPage)
-	//http.HandleFunc("/a", mainPage)
+	http.HandleFunc("/random", randomImg)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("www/static"))))
 	http.ListenAndServe(":8088", nil)
 }
@@ -30,11 +30,14 @@ func mainPage(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func printUrl(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(r.URL.Path)
-}
-
 func fourOFour(w http.ResponseWriter)  {
 	t, _ := template.ParseFiles(four04)
 	t.Execute(w, nil)
+}
+
+func randomImg(w http.ResponseWriter, r *http.Request)  {
+	ln := struct {
+		Link string
+	}{}
+
 }
