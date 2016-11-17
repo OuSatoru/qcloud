@@ -48,9 +48,9 @@ func randomImg(w http.ResponseWriter, r *http.Request)  {
 	//bigger than 4
 
 	ur := grab.YandeHead + strconv.Itoa(random(374904))
-	link := grab.Grab(ur)
-	fmt.Println(link)
-	http.Redirect(w, r, link, http.StatusMovedPermanently)
+	//link := grab.Grab(ur)
+	fmt.Println(ur)
+	http.Redirect(w, r, ur, http.StatusMovedPermanently)
 
 	//lk.Link = grab.Grab(ur)
 	//t, _ := template.ParseFiles(image)
