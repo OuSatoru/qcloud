@@ -1,19 +1,20 @@
 package main
 
 import (
-	"github.com/OuSatoru/qcloud/grab"
 	"fmt"
+	"github.com/OuSatoru/qcloud/grab"
+	"github.com/OuSatoru/qcloud/wechat"
 	"html/template"
-	"net/http"
 	"math/rand"
-	"time"
+	"net/http"
 	"strconv"
+	"time"
 )
 
 const (
 	mainpage = "www/tmpl/home.html"
-	four04 = "www/tmpl/404.html"
-	image = "www/tmpl/image.html"
+	four04   = "www/tmpl/404.html"
+	image    = "www/tmpl/image.html"
 )
 
 func main() {
@@ -21,8 +22,11 @@ func main() {
 	//fmt.Println(grab.Grab("https://yande.re/post/show/374899"))
 	http.HandleFunc("/", mainPage)
 	http.HandleFunc("/random", randomImg)
+
+	http.HandleFunc("/wx", wechat.Handle)
+
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("www/static"))))
-	http.ListenAndServe(":8087", nil)
+	http.ListenAndServe(":80", nil)
 }
 
 func mainPage(w http.ResponseWriter, r *http.Request) {
@@ -34,12 +38,12 @@ func mainPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func fourOFour(w http.ResponseWriter)  {
+func fourOFour(w http.ResponseWriter) {
 	t, _ := template.ParseFiles(four04)
 	t.Execute(w, nil)
 }
 
-func randomImg(w http.ResponseWriter, r *http.Request)  {
+func randomImg(w http.ResponseWriter, r *http.Request) {
 	//fmt.Println(r.URL.Path)
 	//lk := struct {
 	//	Link string
@@ -48,9 +52,9 @@ func randomImg(w http.ResponseWriter, r *http.Request)  {
 	//bigger than 4
 
 	ur := grab.YandeHead + strconv.Itoa(random(374904))
-	link := grab.Grab(ur)
-	fmt.Println(link)
-	http.Redirect(w, r, link, http.StatusMovedPermanently)
+	//link := grab.Grab(ur)
+	fmt.Println(ur)
+	http.Redirect(w, r, ur, http.StatusMovedPermanently)
 
 	//lk.Link = grab.Grab(ur)
 	//t, _ := template.ParseFiles(image)
