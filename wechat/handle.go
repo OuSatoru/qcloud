@@ -9,8 +9,7 @@ import (
 	"strings"
 )
 
-const token = "wechat4test"
-
+// http handle func for /wx
 func Handle(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	if !checkUrl(w, r) {
@@ -18,7 +17,12 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(r.Form["token"], r.Form["timestamp"], r.Form["nonce"])
 		return
 	}
-	//fmt.Fprintf(w, strings.Join(r.Form["echostr"], ""))
+	if r.Method == "POST" {
+		textContent := PsText(r)
+		if textContent {
+			fmt.Println()
+		}
+	}
 	fmt.Println("Succeed")
 }
 
