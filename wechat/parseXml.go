@@ -6,9 +6,11 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 )
 
-func PsText(r *http.Response) *TextMsg {
+// Parse args from the message that post from wechat, so r REQUEST.
+func PsText(r *http.Request) *TextMsg {
 	resp, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal(err)
@@ -20,22 +22,38 @@ func PsText(r *http.Response) *TextMsg {
 	return body
 }
 
+// make xml from args then post TO wechat, use fmt.Fprintf(w)
+func MkText(fromUserName, toUserName, content string) ([]byte, error) {
+	textReply := &TextReply{}
+	textReply.FromUserName = fromUserName
+	textReply.ToUserName = toUserName
+	textReply.Content = content
+	textReply.MsgType = "text"
+	textReply.CreateTime = time.Duration(time.Now().Unix())
+	return xml.MarshalIndent(textReply, " ", "  ")
+}
+
 type Common struct {
 	XMLName      xml.Name `xml:"xml"`
 	ToUserName   string
 	FromUserName string
-	CreateTime   int
+	CreateTime   time.Duration
 	MsgType      string
-	MsgId        int64
+	//MsgId        int64
 }
 
 type Typ struct {
 	MsgType string
 }
 
-type TextMsg struct {
+type TextReply struct {
 	Common
 	Content string
+}
+
+type TextMsg struct {
+	TextReply
+	MsgId int64
 }
 
 type ImageMsg struct {

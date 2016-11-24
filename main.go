@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/OuSatoru/qcloud/grab"
 	"github.com/OuSatoru/qcloud/wechat"
 	"html/template"
@@ -9,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"log"
 )
 
 const (
@@ -53,7 +53,7 @@ func randomImg(w http.ResponseWriter, r *http.Request) {
 
 	ur := grab.YandeHead + strconv.Itoa(random(374904))
 	//link := grab.Grab(ur)
-	fmt.Println(ur)
+	log.Println(ur)
 	http.Redirect(w, r, ur, http.StatusMovedPermanently)
 
 	//lk.Link = grab.Grab(ur)
