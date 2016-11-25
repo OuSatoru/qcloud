@@ -21,10 +21,18 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		BigContent := PsBig(r)
 		if BigContent != nil {
+			fmt.Println("MsgType: ", BigContent.MsgType)
 			switch BigContent.MsgType {
 			case "text":
 				log.Printf("msg:| %s |, user:| %s |", BigContent.Content, BigContent.FromUserName)
 				textReply, err := MkText(BigContent.ToUserName, BigContent.FromUserName, reverseStr(BigContent.Content))
+				if err != nil {
+					log.Println(err)
+					return
+				}
+				fmt.Fprintf(w, string(textReply))
+			case "image":
+				textReply, err := MkText(BigContent.ToUserName, BigContent.FromUserName, "好图好图！")
 				if err != nil {
 					log.Println(err)
 					return
