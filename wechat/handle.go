@@ -4,10 +4,10 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"sort"
 	"strings"
-	"log"
 )
 
 // http handle func for /wx
@@ -19,15 +19,21 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.Method == "POST" {
-		textContent := PsText(r)
-		if textContent != nil {
-			log.Printf("msg:| %s |, user:| %s |", textContent.Content, textContent.FromUserName)
-			textReply, err := MkText(textContent.ToUserName, textContent.FromUserName, reverseStr(textContent.Content))
-			if err != nil {
-				log.Println(err)
-				return
+		BigContent := PsBig(r)
+		if BigContent != nil {
+			switch BigContent.MsgType {
+			case "text":
+				log.Printf("msg:| %s |, user:| %s |", BigContent.Content, BigContent.FromUserName)
+				textReply, err := MkText(BigContent.ToUserName, BigContent.FromUserName, reverseStr(BigContent.Content))
+				if err != nil {
+					log.Println(err)
+					return
+				}
+				fmt.Fprintf(w, string(textReply))
+			default:
+				fmt.Fprint(w, "success")
 			}
-			fmt.Fprintf(w, string(textReply))
+
 		}
 	}
 	log.Println("Succeed")

@@ -30,6 +30,17 @@ func MsgType(r *http.Request) string {
 	}*/
 }
 
+func PsBig(r *http.Request) *BigMsg {
+	resp, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+	body := &BigMsg{}
+	xml.Unmarshal(resp, body)
+	return body
+}
+
 // Parse args from the message that post from wechat, so r REQUEST.
 func PsText(r *http.Request) *TextMsg {
 	resp, err := ioutil.ReadAll(r.Body)
