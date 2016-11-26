@@ -32,7 +32,7 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 				}
 				fmt.Fprintf(w, string(textReply))
 			case "image":
-				textReply, err := MkText(BigContent.ToUserName, BigContent.FromUserName, "好图好图！")
+				textReply, err := MkText(BigContent.ToUserName, BigContent.FromUserName, "好图，已撸。")
 				if err != nil {
 					log.Println(err)
 					return
