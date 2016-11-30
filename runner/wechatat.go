@@ -25,9 +25,10 @@ type DbLogin struct {
 }
 
 func (db DbLogin) RunningGetAccToken(wat wechat.AccessToken) {
-	for _, lastExpire := lastTimeExpire(db); ;  {
+	for {
 		fmt.Println("Here Here")
 		insertAccToken(db, wat)
+		_, lastExpire := lastTimeExpire(db)
 		//fmt.Println(time.Duration(lastExpire*1000-233) * time.Millisecond)
 		time.Sleep(time.Duration(lastExpire*1000-233) * time.Millisecond)
 
