@@ -3,12 +3,12 @@ package grab
 import (
 	"net/http"
 	//"fmt"
+	"io/ioutil"
 	"log"
 	"regexp"
-	"io/ioutil"
 )
 
-const YandeHead  = "https://yande.re/post/show/"
+const YandeHead = "https://yande.re/post/show/"
 
 func Grab(ur string) string {
 	htm, err := http.Get(ur)

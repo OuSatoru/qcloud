@@ -1,11 +1,11 @@
 package wechat
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
 	"io/ioutil"
-	"encoding/json"
+	"net/http"
 )
 
 type AccessToken struct {

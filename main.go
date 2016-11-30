@@ -4,11 +4,11 @@ import (
 	"github.com/OuSatoru/qcloud/grab"
 	"github.com/OuSatoru/qcloud/wechat"
 	"html/template"
+	"log"
 	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
-	"log"
 )
 
 const (
@@ -33,6 +33,7 @@ func mainPage(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/" {
 		t, _ := template.ParseFiles(mainpage)
 		t.Execute(w, nil)
+		log.Println(r.RemoteAddr, "entering main page.")
 	} else {
 		fourOFour(w)
 	}

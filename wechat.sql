@@ -7,3 +7,16 @@ CREATE TABLE accesstoken
   errcode     INTEGER,
   errmsg      VARCHAR(20)
 );
+
+CREATE SEQUENCE addone
+  START WITH 1
+  INCREMENT BY 1
+  NO MAXVALUE
+  NO MINVALUE
+  CACHE 1;
+
+ALTER TABLE accesstoken ALTER COLUMN id SET DEFAULT nextval('addone');
+
+SELECT setval('addone', 1, FALSE);
+
+SELECT * FROM accesstoken
