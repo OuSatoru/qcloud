@@ -14,14 +14,18 @@ type AccessToken struct {
 }
 
 func (at *AccessToken) fetch() (string, error) {
-	rtn, err := get(fmt.Sprintf("%stoken?grant_type=client_credential&appid=%s&secret=%s", cgibin, at.AppId, at.AppSecret))
+	rtn, err := getATResp(fmt.Sprintf("%stoken?grant_type=client_credential&appid=%s&secret=%s", cgibin, at.AppId, at.AppSecret))
 	if err != nil {
 		return "", err
 	}
 	return rtn.AccessToken, nil
 }
 
-type at_response struct {
+func (at *AccessToken) FetchAtResp() (*At_response, error) {
+	return getATResp(fmt.Sprintf("%stoken?grant_type=client_credential&appid=%s&secret=%s", cgibin, at.AppId, at.AppSecret))
+}
+
+type At_response struct {
 	AccessToken string `json:"access_token"`
 	ExpiresIn   int64  `json:"expires_in"`
 
@@ -29,7 +33,8 @@ type at_response struct {
 	ErrMsg  string `json:"errmsg"`
 }
 
-func get(url string) (*at_response, error) {
+// return access token response as a struct
+func getATResp(url string) (*At_response, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -39,7 +44,7 @@ func get(url string) (*at_response, error) {
 	if err != nil {
 		return nil, err
 	}
-	var rtn at_response
+	var rtn At_response
 	if err := json.Unmarshal(data, &rtn); err != nil {
 		return nil, err
 	}

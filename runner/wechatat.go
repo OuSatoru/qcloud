@@ -6,6 +6,7 @@ import (
 	"time"
 	_ "github.com/lib/pq"
 	"log"
+	"github.com/OuSatoru/qcloud/wechat"
 )
 
 type atdb struct {
@@ -17,9 +18,39 @@ type atdb struct {
 	errmsg      sql.NullString
 }
 
-func InsertAccToken() {
-	if time.Since(lastTime()) < -7200*time.Second {
-
+func InsertAccToken(wat wechat.AccessToken) {
+	r, err := wat.FetchAtResp()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	if r.AccessToken != "" {
+		jikan := time.Now()
+		//shadow
+		exn, err := sql.Open("postgres", "postgres:///wechat?sslmode=disable")
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		stmt, err := exn.Prepare(`INSERT INTO accesstoken (jikan, accesstoken, expiresin) VALUES ($1, $2, $3)`)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		stmt.Exec(jikan, r.AccessToken, r.ExpiresIn)
+	} else if r.ErrCode != 0 {
+		jikan := time.Now()
+		exn, err := sql.Open("postgres", "postgres:///wechat?sslmode=disable")
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		stmt, err := exn.Prepare(`INSERT INTO accesstoken (jikan, errcode, errmsg) VALUES ($1, $2, $3)`)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		stmt.Exec(jikan, r.ErrCode, r.ErrMsg)
 	}
 }
 
