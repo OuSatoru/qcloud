@@ -51,6 +51,6 @@ func getATResp(url string) (*At_response, error) {
 	if rtn.ErrCode != 0 {
 		return nil, errors.New(fmt.Sprintf("%d %s", rtn.ErrCode, rtn.ErrMsg))
 	}
-
+	fmt.Println(&rtn)
 	return &rtn, nil
 }

@@ -9,6 +9,9 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"flag"
+	"github.com/OuSatoru/qcloud/runner"
+	"fmt"
 )
 
 const (
@@ -18,6 +21,24 @@ const (
 )
 
 func main() {
+	dbUser := flag.String("du", "postgres", "Database User")
+	dbPwd := flag.String("dp", "", "Database Password")
+	appId := flag.String("ai", "", "AppId")
+	appSecret := flag.String("as", "", "AppSecret")
+	flag.Parse()
+	switch {
+	case *dbPwd == "" || *appId == "" || *appSecret == "":
+		fmt.Println("Going to have no access to db nor access-token get.")
+	case *dbPwd != "" && (*appId == "" || *appSecret == ""):
+		//TODO: largest num of post in yande
+		fmt.Println("Going to have no access-token get.")
+		fallthrough
+	case *dbPwd != "" && *appId != "" && *appSecret != "":
+		dbLogin := runner.DbLogin{DbUser:*dbUser, DbPwd:*dbPwd}
+		accessToken := wechat.AccessToken{AppId:*appId, AppSecret:*appSecret}
+		go dbLogin.RunningGetAccToken(accessToken)
+	}
+
 	//mux := http.NewServeMux()
 	//fmt.Println(grab.Grab("https://yande.re/post/show/374899"))
 	http.HandleFunc("/", mainPage)
@@ -49,7 +70,7 @@ func randomImg(w http.ResponseWriter, r *http.Request) {
 	//lk := struct {
 	//	Link string
 	//}{}
-	//TODO: largest num of post in yande temporarily 374903
+	// temporarily 374903
 	//bigger than 4
 
 	ur := grab.YandeHead + strconv.Itoa(random(374904))

@@ -7,18 +7,34 @@ import (
 	_ "github.com/lib/pq"
 	"log"
 	"github.com/OuSatoru/qcloud/wechat"
+	"fmt"
 )
 
 type atdb struct {
 	//id          int
 	jikan       time.Time
 	accesstoken sql.NullString
-	expiresin   sql.NullString
+	expiresin   sql.NullInt64
 	errcode     sql.NullInt64
 	errmsg      sql.NullString
 }
 
-func InsertAccToken(wat wechat.AccessToken) {
+type DbLogin struct {
+	DbUser string
+	DbPwd string
+}
+
+func (db DbLogin) RunningGetAccToken(wat wechat.AccessToken) {
+	for _, lastExpire := lastTimeExpire(db); ;  {
+		fmt.Println("Here Here")
+		insertAccToken(db, wat)
+		//fmt.Println(time.Duration(lastExpire*1000-233) * time.Millisecond)
+		time.Sleep(time.Duration(lastExpire*1000-233) * time.Millisecond)
+
+	}
+}
+
+func insertAccToken(db DbLogin, wat wechat.AccessToken) {
 	r, err := wat.FetchAtResp()
 	if err != nil {
 		log.Println(err)
@@ -26,8 +42,7 @@ func InsertAccToken(wat wechat.AccessToken) {
 	}
 	if r.AccessToken != "" {
 		jikan := time.Now()
-		//shadow
-		exn, err := sql.Open("postgres", "postgres:///wechat?sslmode=disable")
+		exn, err := sql.Open("postgres", fmt.Sprintf("postgres://%s:%s@localhost/wechat?sslmode=disable", db.DbUser, db.DbPwd))
 		if err != nil {
 			log.Println(err)
 			return
@@ -40,7 +55,7 @@ func InsertAccToken(wat wechat.AccessToken) {
 		stmt.Exec(jikan, r.AccessToken, r.ExpiresIn)
 	} else if r.ErrCode != 0 {
 		jikan := time.Now()
-		exn, err := sql.Open("postgres", "postgres:///wechat?sslmode=disable")
+		exn, err := sql.Open("postgres", fmt.Sprintf("postgres://%s:%s@localhost/wechat?sslmode=disable", db.DbUser, db.DbPwd))
 		if err != nil {
 			log.Println(err)
 			return
@@ -54,12 +69,11 @@ func InsertAccToken(wat wechat.AccessToken) {
 	}
 }
 
-func lastTime() time.Time {
-	// shadow it
-	exn, err := sql.Open("postgres", "postgres:///wechat?sslmode=disable")
+func lastTimeExpire(db DbLogin) (time.Time, int64) {
+	exn, err := sql.Open("postgres", fmt.Sprintf("postgres://%s:%s@localhost/wechat?sslmode=disable", db.DbUser, db.DbPwd))
 	if err != nil {
 		log.Println(err)
-		return nil
+		return time.Now(), 7200
 	}
 	rows, err := exn.Query(`SELECT
 				  jikan,
@@ -75,10 +89,12 @@ func lastTime() time.Time {
 					       WHERE accesstoken IS NOT NULL) a)`)
 	if err != nil {
 		log.Println(err)
-		return nil
+		return time.Now(), 7200
 	}
 	defer rows.Close()
 	var a atdb
-	rows.Scan(&a.jikan, &a.accesstoken, &a.expiresin, &a.errcode, &a.errmsg)
-	return a.jikan
+	for rows.Next() {
+		rows.Scan(&a.jikan, &a.accesstoken, &a.expiresin, &a.errcode, &a.errmsg)
+	}
+	return a.jikan, a.expiresin.Int64
 }
