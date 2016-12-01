@@ -29,7 +29,7 @@ func (db DbLogin) RunningGetAccToken(wat wechat.AccessToken) {
 		fmt.Println("Here Here")
 		insertAccToken(db, wat)
 		_, lastExpire := lastTimeExpire(db)
-		//fmt.Println(time.Duration(lastExpire*1000-233) * time.Millisecond)
+		// 1 hour suggested, now a little time before 7200 secs
 		time.Sleep(time.Duration(lastExpire*1000-233) * time.Millisecond)
 
 	}

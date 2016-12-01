@@ -26,17 +26,17 @@ func main() {
 	appId := flag.String("ai", "", "AppId")
 	appSecret := flag.String("as", "", "AppSecret")
 	flag.Parse()
-	switch {
-	case *dbPwd == "" || *appId == "" || *appSecret == "":
+	if *dbPwd == "" {
 		fmt.Println("Going to have no access to db nor access-token get.")
-	case *dbPwd != "" && (*appId == "" || *appSecret == ""):
-		//TODO: largest num of post in yande
-		fmt.Println("Going to have no access-token get.")
-		fallthrough
-	case *dbPwd != "" && *appId != "" && *appSecret != "":
+	} else {
 		dbLogin := runner.DbLogin{DbUser:*dbUser, DbPwd:*dbPwd}
-		accessToken := wechat.AccessToken{AppId:*appId, AppSecret:*appSecret}
-		go dbLogin.RunningGetAccToken(accessToken)
+		if *appId != "" && *appSecret != "" {
+			accessToken := wechat.AccessToken{AppId:*appId, AppSecret:*appSecret}
+			go dbLogin.RunningGetAccToken(accessToken)
+		} else {
+			fmt.Println("Going to have no access-token get.")
+		}
+		//TODO: largest num of post in yande, go func
 	}
 
 	//mux := http.NewServeMux()
@@ -70,10 +70,10 @@ func randomImg(w http.ResponseWriter, r *http.Request) {
 	//lk := struct {
 	//	Link string
 	//}{}
-	// temporarily 374903
+	// temporarily 376275
 	//bigger than 4
 
-	ur := grab.YandeHead + strconv.Itoa(random(374904))
+	ur := grab.YandeHead + strconv.Itoa(random(376275))
 	//link := grab.Grab(ur)
 	log.Println(ur)
 	http.Redirect(w, r, ur, http.StatusMovedPermanently)
