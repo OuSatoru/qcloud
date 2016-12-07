@@ -5,11 +5,23 @@ import (
 	"log"
 	"crypto/md5"
 	"encoding/hex"
+	"time"
 )
 
 //only watch a list of small files
-func FileWatcher(fileName string)  {
-	
+type FileModified struct {
+	fileName string
+	modified bool
+}
+
+func FileWatch(fileName string, modified chan FileModified)  {
+	for  {
+		fileSum := checkSum(fileName)
+		time.Sleep(2 * time.Second)
+		isModified := fileModified(fileName, fileSum)
+		modifiedStruct := FileModified{fileName:fileName, modified:isModified}
+		modified <- modifiedStruct
+	}
 }
 
 func fileModified(fileName string, oriSum string) bool {
