@@ -3,11 +3,11 @@ package runner
 
 import (
 	"database/sql"
-	"time"
+	"fmt"
+	"github.com/OuSatoru/qcloud/wechat"
 	_ "github.com/lib/pq"
 	"log"
-	"github.com/OuSatoru/qcloud/wechat"
-	"fmt"
+	"time"
 )
 
 type atdb struct {
@@ -21,7 +21,7 @@ type atdb struct {
 
 type DbLogin struct {
 	DbUser string
-	DbPwd string
+	DbPwd  string
 }
 
 func (db DbLogin) RunningGetAccToken(wat wechat.AccessToken) {

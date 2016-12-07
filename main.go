@@ -1,7 +1,10 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"github.com/OuSatoru/qcloud/grab"
+	"github.com/OuSatoru/qcloud/runner"
 	"github.com/OuSatoru/qcloud/wechat"
 	"html/template"
 	"log"
@@ -9,9 +12,6 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-	"flag"
-	"github.com/OuSatoru/qcloud/runner"
-	"fmt"
 )
 
 const (
@@ -29,9 +29,9 @@ func main() {
 	if *dbPwd == "" {
 		fmt.Println("Going to have no access to db nor access-token get.")
 	} else {
-		dbLogin := runner.DbLogin{DbUser:*dbUser, DbPwd:*dbPwd}
+		dbLogin := runner.DbLogin{DbUser: *dbUser, DbPwd: *dbPwd}
 		if *appId != "" && *appSecret != "" {
-			accessToken := wechat.AccessToken{AppId:*appId, AppSecret:*appSecret}
+			accessToken := wechat.AccessToken{AppId: *appId, AppSecret: *appSecret}
 			go dbLogin.RunningGetAccToken(accessToken)
 		} else {
 			fmt.Println("Going to have no access-token get.")
