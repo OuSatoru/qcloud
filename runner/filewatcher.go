@@ -28,7 +28,8 @@ func fileWatch(fileName string, modified chan FileModified)  {
 func FileExecute(fileName string, modified chan FileModified)  {
 	go fileWatch(fileName, modified)
 	for {
-		switch mod := <- modified {
+		mod := <- modified
+		switch {
 		case mod.Modified == true:
 			switch mod.FileName {
 			case wechat.CREATEMENU:

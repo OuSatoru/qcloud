@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"github.com/OuSatoru/qcloud/runner"
 	"net/http"
 	"strings"
 	"log"
+	"database/sql"
 )
 
 type menu struct {
@@ -41,14 +41,14 @@ func MenuToJson(m menu) string {
 
 func JsonToMenu(j []byte) (m menu) {
 	if err := json.Unmarshal(j, &m); err != nil {
-		return nil
+		return menu{}
 	}
 	return m
 }
 
 func YamlToMenu(s []byte) (m menu) {
 	if err := yaml.Unmarshal(s, &m); err != nil {
-		return nil
+		return menu{}
 	}
 	return m
 }
@@ -61,7 +61,7 @@ func MenuToYaml(m menu) string {
 	return string(v)
 }
 
-func CreateMenu(db runner.DbLogin)  {
+func CreateMenu(db *sql.DB)  {
 	content, err := ioutil.ReadFile(CREATEMENU)
 	if err != nil {
 		log.Println(err)
@@ -82,7 +82,7 @@ func CreateMenu(db runner.DbLogin)  {
 	log.Println(string(body))
 }
 
-func SearchMenu(db runner.DbLogin) string {
+func SearchMenu(db *sql.DB) string {
 	resp, err := http.Get(cgibin+"menu/get?access_token="+ NowAccessToken(db))
 	if err != nil {
 		log.Println(err)
@@ -97,7 +97,7 @@ func SearchMenu(db runner.DbLogin) string {
 	return MenuToYaml(JsonToMenu(body))
 }
 
-func DeleteMenu(db runner.DbLogin)  {
+func DeleteMenu(db *sql.DB)  {
 	resp, err := http.Get(cgibin+"menu/delete?access_token="+ NowAccessToken(db))
 	if err != nil {
 		log.Println(err)

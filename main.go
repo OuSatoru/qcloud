@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"database/sql"
 )
 
 const (
@@ -29,10 +30,14 @@ func main() {
 	if *dbPwd == "" {
 		fmt.Println("Going to have no access to db nor access-token get.")
 	} else {
-		dbLogin := runner.DbLogin{DbUser: *dbUser, DbPwd: *dbPwd}
+		//dbLogin := runner.DbLogin{DbUser: *dbUser, DbPwd: *dbPwd}
+		dbConnect, err := sql.Open("postgres", fmt.Sprintf("postgres://%s:%s@localhost/wechat?sslmode=disable", *dbUser, *dbPwd))
+		if err != nil {
+			log.Println(err)
+		}
 		if *appId != "" && *appSecret != "" {
 			accessToken := wechat.AccessToken{AppId: *appId, AppSecret: *appSecret}
-			go dbLogin.RunningGetAccToken(accessToken)
+			go runner.RunningGetAccToken(dbConnect, accessToken)
 		} else {
 			fmt.Println("Going to have no access-token get.")
 		}
