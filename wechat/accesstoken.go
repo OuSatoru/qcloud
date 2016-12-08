@@ -6,6 +6,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	_ "github.com/lib/pq"
+	"database/sql"
+	"log"
+	"github.com/OuSatoru/qcloud/runner"
 )
 
 type AccessToken struct {
@@ -53,4 +57,26 @@ func getATResp(url string) (*At_response, error) {
 	}
 	fmt.Println(&rtn)
 	return &rtn, nil
+}
+
+func NowAccessToken(db runner.DbLogin) string {
+	var at string
+	exn, err := sql.Open("postgres", fmt.Sprintf("postgres://%s:%s@localhost/wechat?sslmode=disable", db.DbUser, db.DbPwd))
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+	row := exn.QueryRow(`SELECT accesstoken
+				FROM accesstoken
+				WHERE id = (SELECT max(id)
+					    FROM
+					      (SELECT *
+					       FROM accesstoken
+					       WHERE accesstoken IS NOT NULL) a)`)
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+	row.Scan(&at)
+	return at
 }

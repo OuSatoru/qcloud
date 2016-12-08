@@ -1,4 +1,4 @@
-package wechat
+package runner
 
 import (
 	"io/ioutil"
@@ -6,21 +6,37 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"time"
+	"github.com/OuSatoru/qcloud/wechat"
 )
 
 //only watch a list of small files
 type FileModified struct {
-	fileName string
-	modified bool
+	FileName string
+	Modified bool
 }
 
-func FileWatch(fileName string, modified chan FileModified)  {
+func fileWatch(fileName string, modified chan FileModified)  {
 	for  {
 		fileSum := checkSum(fileName)
 		time.Sleep(2 * time.Second)
 		isModified := fileModified(fileName, fileSum)
-		modifiedStruct := FileModified{fileName:fileName, modified:isModified}
+		modifiedStruct := FileModified{FileName:fileName, Modified:isModified}
 		modified <- modifiedStruct
+	}
+}
+
+func FileExecute(fileName string, modified chan FileModified)  {
+	go fileWatch(fileName, modified)
+	for {
+		switch mod := <- modified {
+		case mod.Modified == true:
+			switch mod.FileName {
+			case wechat.CREATEMENU:
+
+			}
+		case mod.Modified == false:
+
+		}
 	}
 }
 

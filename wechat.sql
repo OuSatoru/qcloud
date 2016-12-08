@@ -22,3 +22,11 @@ SELECT setval('addone', 1, FALSE);
 SELECT * FROM accesstoken;
 
 DELETE FROM accesstoken WHERE id BETWEEN 2 AND (select max(id) FROM accesstoken);
+
+SELECT accesstoken
+FROM accesstoken
+WHERE id = (SELECT max(id)
+            FROM
+              (SELECT *
+               FROM accesstoken
+               WHERE accesstoken IS NOT NULL) a)
