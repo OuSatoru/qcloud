@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
 	"fmt"
 	"github.com/OuSatoru/qcloud/grab"
@@ -12,7 +13,6 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-	"database/sql"
 )
 
 const (

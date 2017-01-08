@@ -1,13 +1,13 @@
 package wechat
 
 import (
+	"database/sql"
 	"encoding/json"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strings"
-	"log"
-	"database/sql"
 )
 
 type menu struct {
@@ -61,14 +61,14 @@ func MenuToYaml(m menu) string {
 	return string(v)
 }
 
-func CreateMenu(db *sql.DB)  {
+func CreateMenu(db *sql.DB) {
 	content, err := ioutil.ReadFile(CREATEMENU)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	menuJson := MenuToJson(YamlToMenu(content))
-	resp, err := http.Post(cgibin+"menu/create?access_token="+ NowAccessToken(db),"application/json",strings.NewReader(menuJson))
+	resp, err := http.Post(cgibin+"menu/create?access_token="+NowAccessToken(db), "application/json", strings.NewReader(menuJson))
 	if err != nil {
 		log.Println(err)
 		return
@@ -83,7 +83,7 @@ func CreateMenu(db *sql.DB)  {
 }
 
 func SearchMenu(db *sql.DB) string {
-	resp, err := http.Get(cgibin+"menu/get?access_token="+ NowAccessToken(db))
+	resp, err := http.Get(cgibin + "menu/get?access_token=" + NowAccessToken(db))
 	if err != nil {
 		log.Println(err)
 		return ""
@@ -97,8 +97,8 @@ func SearchMenu(db *sql.DB) string {
 	return MenuToYaml(JsonToMenu(body))
 }
 
-func DeleteMenu(db *sql.DB)  {
-	resp, err := http.Get(cgibin+"menu/delete?access_token="+ NowAccessToken(db))
+func DeleteMenu(db *sql.DB) {
+	resp, err := http.Get(cgibin + "menu/delete?access_token=" + NowAccessToken(db))
 	if err != nil {
 		log.Println(err)
 		return

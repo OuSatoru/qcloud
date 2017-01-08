@@ -1,12 +1,13 @@
 package runner
 
 import (
+	"crypto/md5"
+	"database/sql"
+	"encoding/hex"
+	"github.com/OuSatoru/qcloud/wechat"
 	"io/ioutil"
 	"log"
-	"crypto/md5"
-	"encoding/hex"
 	"time"
-	"github.com/OuSatoru/qcloud/wechat"
 )
 
 //only watch a list of small files
@@ -15,25 +16,25 @@ type FileModified struct {
 	Modified bool
 }
 
-func fileWatch(fileName string, modified chan FileModified)  {
-	for  {
+func fileWatch(fileName string, modified chan FileModified) {
+	for {
 		fileSum := checkSum(fileName)
 		time.Sleep(2 * time.Second)
 		isModified := fileModified(fileName, fileSum)
-		modifiedStruct := FileModified{FileName:fileName, Modified:isModified}
+		modifiedStruct := FileModified{FileName: fileName, Modified: isModified}
 		modified <- modifiedStruct
 	}
 }
 
-func FileExecute(fileName string, modified chan FileModified)  {
+func FileExecute(db *sql.DB, fileName string, modified chan FileModified) {
 	go fileWatch(fileName, modified)
 	for {
-		mod := <- modified
+		mod := <-modified
 		switch {
 		case mod.Modified == true:
 			switch mod.FileName {
 			case wechat.CREATEMENU:
-
+				wechat.CreateMenu(db)
 			}
 		case mod.Modified == false:
 

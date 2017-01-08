@@ -1,13 +1,13 @@
 package wechat
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
+	_ "github.com/lib/pq"
 	"io/ioutil"
 	"net/http"
-	_ "github.com/lib/pq"
-	"database/sql"
 )
 
 type AccessToken struct {

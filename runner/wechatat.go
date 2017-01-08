@@ -35,18 +35,17 @@ type DbLogin struct {
 //	}
 //}
 
-func RunningGetAccToken(db *sql.DB, wat wechat.AccessToken)  {
+func RunningGetAccToken(db *sql.DB, wat wechat.AccessToken) {
 	for {
 		fmt.Println("Here Here")
 		insertAccToken(db, wat)
 		_, lastExpire := lastTimeExpire(db)
 		// 1 hour suggested, now a little time before 7200 secs
-		time.Sleep(time.Duration(lastExpire*1000-233) * time.Millisecond)
-
+		time.Sleep(time.Duration(lastExpire*1000-500) * time.Millisecond)
 	}
 }
 
-func insertAccToken(db *sql.DB, wat wechat.AccessToken)  {
+func insertAccToken(db *sql.DB, wat wechat.AccessToken) {
 	r, err := wat.FetchAtResp()
 	if err != nil {
 		log.Println(err)
